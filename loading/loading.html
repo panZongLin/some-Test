@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='utf-8' />
+		<title>loading</title>
+		<link rel="stylesheet" type="text/css" href="loading.css" />
+	</head>
+	<body>
+		<div class="btn" id="btn">点击加载</div> 
+		<div class="menu">
+			<ul id="insertUl">
+			</ul>
+		</div>
+	</body>
+</html>
+<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+	var attrConfig = {
+		'id':'loadId',
+		'class':'loadClass',
+		'text':'正在加载中...'
+	}
+	var maskConfig = {
+		'id':'maskId',
+		'class':'maskClass',
+		'style':'height:' + 100 + '%'
+	}
+
+	function getId(n){
+		return document.getElementById(n);
+	}
+	getId('btn').onclick = function(){
+		createDom( attrConfig, 'div' );
+		createDom( maskConfig, 'div' );
+
+		$.ajax({
+			url:'subnav.js',
+			type:'get',
+			dataType:'json',
+			success:function(d){
+				// 假设此数据等待时间为1秒。
+				//1秒之后，删除load
+				setTimeout(function(){
+					callback(d);
+				},1000);
+			}
+		});
+	}
+
+	function callback(d){
+		if(d.success=='1') {
+			var data = d.data;
+			deleteDom(attrConfig.id);
+			deleteDom(maskConfig.id);
+			for(let i=0; i<data.length; i++) {
+				createDom({text: data[i]}, 'li', 'insertUl');
+			}
+			alert('callback：数据已经加载成功!');
+		}
+	}
+
+	function createDom( config, createNode, insertNode){
+		var _insert = insertNode==undefined ? document.body : document.getElementById(insertNode);
+		var _create = document.createElement(createNode);
+
+		for(var i in config){
+			_create.setAttribute( i, config[i] );
+		}
+
+		if( config.text != undefined ){
+			_create.innerHTML = config.text;
+		}
+
+		_insert.appendChild( _create );
+	}
+
+	function deleteDom(n){
+		var _n = getId(n);
+		_n.parentNode.removeChild( _n );
+	}
+
+</script>

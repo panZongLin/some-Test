@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>FileReader</title>
+</head>
+<body>
+	<label>请选择一个图像文件：</label>
+	<input type="file" id="file_input" />
+	<br/>  
+	文件字节长度：<span id="size"></span>
+	<br/>  
+	文件类型：<span id="type"></span>
+	<br/> 
+	<div id="result">
+		<!-- 这里用来显示读取结果 -->
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	var result = document.getElementById("result");
+	var input = document.getElementById("file_input");
+	var size = document.getElementById("size");
+	var type = document.getElementById("type");
+
+	// 这是判断，你的浏览器，是否支持FileReader
+	if (typeof FileReader === 'undefined') {
+		result.innerHTML = "抱歉，你的浏览器不支持 FileReader";
+		input.setAttribute('disabled', 'disabled');
+	} else {
+		input.addEventListener('change', readFile, false);
+	}
+
+	function readFile() {
+		var file = this.files[0];
+		if (!/image\/\w+/.test(file.type)) {
+			alert("请确保文件为图像类型");
+			return false;
+		}
+		size.innerHTML = file.size;
+		type.innerHTML = file.type;
+		var reader = new FileReader();
+		// 它只是执行了读取行为，没有返回值
+		reader.readAsDataURL(file);
+
+		reader.onload = function (e) {
+			result.innerHTML = '<img src="' + e.target.result + '" alt=""/>'
+		}
+	}
+</script>
